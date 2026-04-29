@@ -11,28 +11,61 @@ class LeaveController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            $leaves = Leave::with('employee')->latest()->get();
+        } elseif ($user->employee_id) {
+            $leaves = Leave::with('employee')
+                ->where('employee_id', $user->employee_id)
+                ->latest()->get();
+        } else {
+            $leaves = collect();
+        }
+
         return Inertia::render('Leaves/Index', [
-            'leaves' => Leave::with('employee')->latest()->get(),
+            'leaves'  => $leaves,
+            'isAdmin' => $user->isAdmin(),
         ]);
     }
 
     public function create()
     {
+        $user = auth()->user();
+
         return Inertia::render('Leaves/Form', [
-            'employees' => Employee::all(),
+            'employees' => $user->isAdmin() ? Employee::all() : [],
+            'isAdmin'   => $user->isAdmin(),
         ]);
     }
 
     public function store(Request $request)
     {
+        $user = auth()->user();
+
+        if ($user->isAdmin()) {
+            $request->validate(['employee_id' => 'required|exists:employees,id']);
+            $employeeId = $request->employee_id;
+        } else {
+            if (! $user->employee_id) {
+                return back()->withErrors(['employee_id' => 'Your account is not linked to an employee profile. Please contact admin.']);
+            }
+            $employeeId = $user->employee_id;
+        }
+
         $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'from_date'   => 'required|date',
-            'to_date'     => 'required|date|after_or_equal:from_date',
-            'reason'      => 'required|string',
+            'from_date' => 'required|date',
+            'to_date'   => 'required|date|after_or_equal:from_date',
+            'reason'    => 'required|string',
         ]);
 
-        Leave::create($request->all());
+        Leave::create([
+            'employee_id' => $employeeId,
+            'from_date'   => $request->from_date,
+            'to_date'     => $request->to_date,
+            'reason'      => $request->reason,
+        ]);
+
         return redirect()->route('leaves.index')->with('success', 'Leave applied.');
     }
 

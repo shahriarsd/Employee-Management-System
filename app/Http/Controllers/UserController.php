@@ -2,63 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Admin: list all users and their linked employee
     public function index()
     {
-        //
+        return Inertia::render('Users/Index', [
+            'users'     => User::with('employee')->get(),
+            'employees' => Employee::all(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Admin: link a user to an employee and set role
+    public function update(Request $request, User $user)
     {
-        //
-    }
+        $request->validate([
+            'role'        => 'required|in:admin,employee',
+            'employee_id' => 'nullable|exists:employees,id',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $user->update($request->only('role', 'employee_id'));
+        return back()->with('success', 'User updated.');
     }
 }

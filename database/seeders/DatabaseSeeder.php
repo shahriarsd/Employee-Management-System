@@ -12,20 +12,25 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create(['name' => 'Admin', 'email' => 'admin@example.com', 'password' => Hash::make('password')]);
+        // Admin user
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin', 'password' => Hash::make('password'), 'role' => 'admin']
+        );
 
-        $departments = ['Engineering', 'Marketing', 'HR', 'Finance'];
-        foreach ($departments as $dept) {
-            Department::create(['name' => $dept]);
-        }
+        // Sample department
+        $dept = Department::firstOrCreate(['name' => 'Engineering'], ['description' => 'Tech team']);
 
-        $employees = [
-            ['name' => 'John Smith',  'email' => 'john@example.com',  'phone' => '01711000001', 'department_id' => 1, 'role' => 'Software Engineer', 'salary' => 5000],
-            ['name' => 'Sara Ahmed',  'email' => 'sara@example.com',  'phone' => '01711000002', 'department_id' => 2, 'role' => 'Marketing Lead',    'salary' => 4500],
-            ['name' => 'Rahim Khan',  'email' => 'rahim@example.com', 'phone' => '01711000003', 'department_id' => 3, 'role' => 'HR Manager',        'salary' => 4000],
-        ];
-        foreach ($employees as $emp) {
-            Employee::create($emp);
-        }
+        // Sample employee
+        $employee = Employee::firstOrCreate(
+            ['email' => 'employee@example.com'],
+            ['name' => 'John Doe', 'phone' => '01700000000', 'department_id' => $dept->id, 'role' => 'Developer', 'salary' => 50000]
+        );
+
+        // Employee user linked to employee record
+        User::updateOrCreate(
+            ['email' => 'employee@example.com'],
+            ['name' => 'John Doe', 'password' => Hash::make('password'), 'role' => 'employee', 'employee_id' => $employee->id]
+        );
     }
 }

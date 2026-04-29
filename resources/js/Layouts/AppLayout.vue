@@ -7,7 +7,7 @@
       </div>
       <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         <Link
-          v-for="item in nav"
+          v-for="item in visibleNav"
           :key="item.href"
           :href="item.href"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition"
@@ -37,6 +37,7 @@
       <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between shadow-sm">
         <h1 class="text-lg font-semibold text-gray-700">{{ title }}</h1>
         <div class="flex items-center gap-3">
+          <span v-if="$page.props.auth.isAdmin" class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">Admin</span>
           <span class="text-sm text-gray-500">{{ $page.props.auth.user?.name }}</span>
           <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
             {{ $page.props.auth.user?.name?.charAt(0)?.toUpperCase() }}
@@ -66,13 +67,21 @@ export default {
   data() {
     return {
       nav: [
-        { label: 'Dashboard',   href: '/dashboard',   icon: '🏠' },
-        { label: 'Employees',   href: '/employees',   icon: '👥' },
-        { label: 'Departments', href: '/departments', icon: '🏢' },
-        { label: 'Leaves',      href: '/leaves',      icon: '📅' },
-        { label: 'Payroll',     href: '/payrolls',    icon: '💰' },
+        { label: 'Dashboard',   href: '/dashboard',   icon: '🏠', adminOnly: false },
+        { label: 'Employees',   href: '/employees',   icon: '👥', adminOnly: true  },
+        { label: 'Departments', href: '/departments', icon: '🏢', adminOnly: true  },
+        { label: 'Attendance',  href: '/attendances', icon: '🕐', adminOnly: false },
+        { label: 'Leaves',      href: '/leaves',      icon: '📅', adminOnly: false },
+        { label: 'Payroll',     href: '/payrolls',    icon: '💰', adminOnly: true  },
+        { label: 'Users',       href: '/users',       icon: '🔑', adminOnly: true  },
       ],
     };
+  },
+  computed: {
+    visibleNav() {
+      const isAdmin = this.$page.props.auth.isAdmin;
+      return this.nav.filter(item => !item.adminOnly || isAdmin);
+    },
   },
   methods: {
     isActive(href) {

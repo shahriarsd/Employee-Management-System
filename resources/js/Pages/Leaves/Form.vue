@@ -3,7 +3,7 @@
     <div class="max-w-lg bg-white rounded-xl shadow-sm p-6">
       <h2 class="font-semibold text-gray-700 mb-5">Apply for Leave</h2>
       <form @submit.prevent="submit" class="space-y-4">
-        <div>
+        <div v-if="isAdmin">
           <label class="label">Employee</label>
           <select v-model="form.employee_id" class="input">
             <option value="">— Select Employee —</option>
@@ -43,7 +43,7 @@ import { Link, useForm } from '@inertiajs/vue3';
 
 export default {
   components: { AppLayout, Link },
-  props: { employees: Array },
+  props: { employees: Array, isAdmin: Boolean },
   setup() {
     const form = useForm({ employee_id: '', from_date: '', to_date: '', reason: '' });
     return { form };

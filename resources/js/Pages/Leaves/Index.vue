@@ -6,7 +6,7 @@
     </div>
     <div class="bg-white rounded-xl shadow-sm">
       <div class="px-6 py-4 border-b"><h2 class="font-semibold text-gray-700">Leave Requests</h2></div>
-      <table class="w-full text-sm text-left">
+      <table class="w-full text-sm text-center">
         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
           <tr>
             <th class="px-6 py-3">#</th>
@@ -15,12 +15,12 @@
             <th class="px-6 py-3">To</th>
             <th class="px-6 py-3">Reason</th>
             <th class="px-6 py-3">Status</th>
-            <th class="px-6 py-3 text-right">Actions</th>
+            <th v-if="isAdmin" class="px-6 py-3">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
           <tr v-if="!leaves.length">
-            <td colspan="7" class="px-6 py-10 text-center text-gray-400">No leave requests.</td>
+            <td :colspan="isAdmin ? 7 : 6" class="px-6 py-10 text-center text-gray-400">No leave requests.</td>
           </tr>
           <tr v-for="(leave, i) in leaves" :key="leave.id" class="hover:bg-gray-50">
             <td class="px-6 py-4 text-gray-400">{{ i + 1 }}</td>
@@ -31,7 +31,7 @@
             <td class="px-6 py-4">
               <span :class="statusClass(leave.status)" class="text-xs px-2 py-1 rounded-full font-medium">{{ leave.status }}</span>
             </td>
-            <td class="px-6 py-4 text-right space-x-2">
+            <td v-if="isAdmin" class="px-6 py-4 space-x-2">
               <template v-if="leave.status === 'pending'">
                 <button @click="updateStatus(leave.id, 'approved')" class="text-xs bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100">Approve</button>
                 <button @click="updateStatus(leave.id, 'rejected')" class="text-xs bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-100">Reject</button>
@@ -51,7 +51,7 @@ import { Link, router } from '@inertiajs/vue3';
 
 export default {
   components: { AppLayout, Link },
-  props: { leaves: Array },
+  props: { leaves: Array, isAdmin: Boolean },
   methods: {
     statusClass(s) {
       return { pending: 'bg-yellow-50 text-yellow-700', approved: 'bg-green-50 text-green-700', rejected: 'bg-red-50 text-red-600' }[s];

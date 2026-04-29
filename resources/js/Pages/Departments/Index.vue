@@ -5,14 +5,14 @@
         <h2 class="font-semibold text-gray-700">Departments</h2>
         <button @click="openModal()" class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700">＋ Add Department</button>
       </div>
-      <table class="w-full text-sm text-left">
+      <table class="w-full text-sm text-center">
         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
           <tr>
             <th class="px-6 py-3">#</th>
             <th class="px-6 py-3">Name</th>
             <th class="px-6 py-3">Description</th>
             <th class="px-6 py-3">Employees</th>
-            <th class="px-6 py-3 text-right">Actions</th>
+            <th class="px-6 py-3">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -24,7 +24,7 @@
             <td class="px-6 py-4 font-medium text-gray-800">{{ dept.name }}</td>
             <td class="px-6 py-4 text-gray-500">{{ dept.description || '—' }}</td>
             <td class="px-6 py-4"><span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">{{ dept.employees_count }}</span></td>
-            <td class="px-6 py-4 text-right space-x-2">
+            <td class="px-6 py-4 space-x-2">
               <button @click="openModal(dept)" class="text-xs bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1.5 rounded-lg hover:bg-yellow-100">Edit</button>
               <button @click="destroy(dept.id)" class="text-xs bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-100">Delete</button>
             </td>
